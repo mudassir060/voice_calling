@@ -27,10 +27,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return web;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -67,7 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '140864617705',
     projectId: 'test-a70',
     storageBucket: 'test-a70.appspot.com',
-    iosClientId: '140864617705-pod9dkd2pc9sc6ns8diol6aoncua0aq8.apps.googleusercontent.com',
+    iosClientId:
+        '140864617705-pod9dkd2pc9sc6ns8diol6aoncua0aq8.apps.googleusercontent.com',
     iosBundleId: 'com.example.voiceCalling',
   );
 
@@ -77,7 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '140864617705',
     projectId: 'test-a70',
     storageBucket: 'test-a70.appspot.com',
-    iosClientId: '140864617705-dc75llm8nvomikqr9301uf9upbmian43.apps.googleusercontent.com',
+    iosClientId:
+        '140864617705-dc75llm8nvomikqr9301uf9upbmian43.apps.googleusercontent.com',
     iosBundleId: 'com.example.voiceCalling.RunnerTests',
   );
 }
