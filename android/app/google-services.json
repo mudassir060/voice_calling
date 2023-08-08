@@ -31,10 +31,10 @@
               "client_type": 3
             },
             {
-              "client_id": "140864617705-eatva87u1i5rbdpkf660r1io6kgv3h0e.apps.googleusercontent.com",
+              "client_id": "140864617705-dc75llm8nvomikqr9301uf9upbmian43.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.test.RunnerTests"
+                "bundle_id": "com.example.voiceCalling.RunnerTests"
               }
             }
           ]
@@ -67,10 +67,10 @@
               "client_type": 3
             },
             {
-              "client_id": "140864617705-eatva87u1i5rbdpkf660r1io6kgv3h0e.apps.googleusercontent.com",
+              "client_id": "140864617705-dc75llm8nvomikqr9301uf9upbmian43.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.test.RunnerTests"
+                "bundle_id": "com.example.voiceCalling.RunnerTests"
               }
             }
           ]
