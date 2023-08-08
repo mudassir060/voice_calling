@@ -8,6 +8,8 @@ environment:
 
 dependencies:
   cloud_functions: ^4.3.4
+  firebase_core: ^2.15.0
+  firebase_messaging: ^14.6.5
   flutter:
     sdk: flutter
   stacked: ^3.4.0
