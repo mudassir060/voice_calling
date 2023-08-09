@@ -81,7 +81,7 @@ class _DialScreenState extends State<DialScreen> with WidgetsBindingObserver {
         await auth.signInAnonymously();
       } else if (!registered) {
         registered = true;
-        this.userId = user.uid;
+        userId = user.uid;
         log("registering user ${user.uid}");
         registerUser();
 

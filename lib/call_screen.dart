@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,47 +24,47 @@ class _CallScreenState extends State<CallScreen> {
 
   void listenCall() {
     callStateListener = TwilioVoice.instance.callEventsListener.listen((event) {
-      print("voip-onCallStateChanged $event");
+      log("voip-onCallStateChanged $event");
       switch (event) {
         case CallEvent.callEnded:
-          print("call Ended");
+          log("call Ended");
           if (!isEnded) {
             isEnded = true;
             Navigator.of(context).pop();
           }
           break;
         case CallEvent.mute:
-          print("received mute");
+          log("received mute");
           setState(() {
             mute = true;
           });
           break;
         case CallEvent.connected:
-          print("call connected");
+          log("call connected");
           setState(() {
             message = "Connected!";
           });
           break;
         case CallEvent.unmute:
-          print("received unmute");
+          log("received unmute");
           setState(() {
             mute = false;
           });
           break;
         case CallEvent.speakerOn:
-          print("received speakerOn");
+          log("received speakerOn");
           setState(() {
             speaker = true;
           });
           break;
         case CallEvent.speakerOff:
-          print("received speakerOf");
+          log("received speakerOf");
           setState(() {
             speaker = false;
           });
           break;
         case CallEvent.ringing:
-          print("ringing");
+          log("ringing");
           setState(() {
             message = "Ringing...";
           });
@@ -78,7 +79,7 @@ class _CallScreenState extends State<CallScreen> {
           }
           break;
         case CallEvent.answer:
-          print("call answered");
+          log("call answered");
           final activeCall = TwilioVoice.instance.call.activeCall;
           if (activeCall != null &&
               activeCall.callDirection == CallDirection.incoming) {
@@ -123,15 +124,15 @@ class _CallScreenState extends State<CallScreen> {
       _updateMuteState(),
       _updateSpeakerState(),
       _updateHoldState(),
-      // _updateBluetoothState(),
+      _updateBluetoothState(),
     ]);
   }
 
   Future<void> _updateMuteState() async {
     // final isMuted = await TwilioVoice.instance.call.isMuted();
-    setState(() {
-      mute = !mute;
-    });
+    // setState(() {
+    //   mute = !mute;
+    // });
   }
 
   Future<void> _updateSpeakerState() async {
@@ -149,12 +150,12 @@ class _CallScreenState extends State<CallScreen> {
     // });
   }
 
-  // Future<void> _updateBluetoothState() async {
+  Future<void> _updateBluetoothState() async {
   //   final isBluetoothOn = await TwilioVoice.instance.call.isBluetoothOn();
   //   setState(() {
   //     this.isBluetoothOn = isBluetoothOn ?? false;
   //   });
-  // }
+  }
 
   @override
   void dispose() {
@@ -166,7 +167,7 @@ class _CallScreenState extends State<CallScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Call Screen"),
+          title: const Text("Call Screen"),
         ),
         backgroundColor: Theme.of(context).colorScheme.secondary,
         body: Container(
@@ -185,7 +186,7 @@ class _CallScreenState extends State<CallScreen> {
                             .headlineMedium!
                             .copyWith(color: Colors.white),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         message,
                         style: Theme.of(context)
@@ -214,7 +215,7 @@ class _CallScreenState extends State<CallScreen> {
                               //This keeps the splash effect within the circle
                               borderRadius: BorderRadius.circular(
                                   1000.0), //Something large to ensure a circle
-                              child: Padding(
+                              child: const Padding(
                                 padding: EdgeInsets.all(20.0),
                                 child: Icon(
                                   Icons.volume_up,
@@ -223,13 +224,14 @@ class _CallScreenState extends State<CallScreen> {
                                 ),
                               ),
                               onTap: () {
-                                print("speaker!");
+                                log("speaker!");
                                 // setState(() {
                                 //   speaker = !speaker;
                                 // });
                                 TwilioVoice.instance.call
                                     .toggleSpeaker(!speaker)
                                     .then((value) {
+                                      log(value.toString());
                                   _updateSpeakerState();
                                 });
                               },
@@ -252,7 +254,7 @@ class _CallScreenState extends State<CallScreen> {
                               //This keeps the splash effect within the circle
                               borderRadius: BorderRadius.circular(
                                   1000.0), //Something large to ensure a circle
-                              child: Padding(
+                              child: const Padding(
                                 padding: EdgeInsets.all(20.0),
                                 child: Icon(
                                   Icons.bluetooth,
@@ -266,7 +268,7 @@ class _CallScreenState extends State<CallScreen> {
                                   return;
                                 }
                                 final newState = !isBluetoothOn;
-                                print("bluetooth? ${newState ? "on" : "off"}");
+                                log("bluetooth? ${newState ? "on" : "off"}");
                                 // TwilioVoice.instance.call.toggleBluetooth(bluetoothOn: newState).then((value) {
                                 //   _updateBluetoothState();
                                 // });
@@ -293,7 +295,7 @@ class _CallScreenState extends State<CallScreen> {
                               //This keeps the splash effect within the circle
                               borderRadius: BorderRadius.circular(
                                   1000.0), //Something large to ensure a circle
-                              child: Padding(
+                              child: const Padding(
                                 padding: EdgeInsets.all(20.0),
                                 child: Icon(
                                   Icons.mic_off,
@@ -302,7 +304,7 @@ class _CallScreenState extends State<CallScreen> {
                                 ),
                               ),
                               onTap: () {
-                                print("mute!");
+                                log("mute!");
                                 TwilioVoice.instance.call
                                     .toggleMute(!mute)
                                     .then((value) {
@@ -322,14 +324,15 @@ class _CallScreenState extends State<CallScreen> {
                           ? Theme.of(context).primaryColor
                           : Colors.white24,
                       padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24),
-                          side: BorderSide(color: Colors.white)),
+                          side: const BorderSide(color: Colors.white)),
                     ),
                     onPressed: () {
-                      print("Holding call? $isHolding");
+                      log("Holding call? $isHolding");
                       TwilioVoice.instance.call.holdCall().then((value) {
+                        log(value.toString());
                         _updateHoldState();
                       });
                     },
@@ -338,8 +341,8 @@ class _CallScreenState extends State<CallScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (isHolding)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 4),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 4),
                             child: Icon(
                               Icons.pause,
                               color: Colors.white,
@@ -347,7 +350,7 @@ class _CallScreenState extends State<CallScreen> {
                           ),
                         Text(
                           isHolding ? "Call on hold" : "Hold call",
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ],
                     ),
@@ -355,13 +358,13 @@ class _CallScreenState extends State<CallScreen> {
                   RawMaterialButton(
                     elevation: 2.0,
                     fillColor: Colors.red,
-                    child: Icon(
+                    child: const Icon(
                       Icons.call_end,
                       size: 40.0,
                       color: Colors.white,
                     ),
-                    padding: EdgeInsets.all(20.0),
-                    shape: CircleBorder(),
+                    padding: const EdgeInsets.all(20.0),
+                    shape: const CircleBorder(),
                     onPressed: () async {
                       final isOnCall =
                           await TwilioVoice.instance.call.isOnCall();
