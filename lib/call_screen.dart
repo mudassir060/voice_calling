@@ -5,8 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:twilio_voice_mimp/twilio_voice.dart';
 
-
-
 class CallScreen extends StatefulWidget {
   @override
   _CallScreenState createState() => _CallScreenState();
@@ -124,15 +122,15 @@ class _CallScreenState extends State<CallScreen> {
       _updateMuteState(),
       _updateSpeakerState(),
       _updateHoldState(),
-      _updateBluetoothState(),
+      // _updateBluetoothState(),
     ]);
   }
 
   Future<void> _updateMuteState() async {
     // final isMuted = await TwilioVoice.instance.call.isMuted();
-    // setState(() {
-    //   mute = !mute;
-    // });
+    setState(() {
+      mute = !mute;
+    });
   }
 
   Future<void> _updateSpeakerState() async {
@@ -150,12 +148,12 @@ class _CallScreenState extends State<CallScreen> {
     // });
   }
 
-  Future<void> _updateBluetoothState() async {
+  // Future<void> _updateBluetoothState() async {
   //   final isBluetoothOn = await TwilioVoice.instance.call.isBluetoothOn();
   //   setState(() {
   //     this.isBluetoothOn = isBluetoothOn ?? false;
   //   });
-  }
+  // }
 
   @override
   void dispose() {
@@ -231,7 +229,6 @@ class _CallScreenState extends State<CallScreen> {
                                 TwilioVoice.instance.call
                                     .toggleSpeaker(!speaker)
                                     .then((value) {
-                                      log(value.toString());
                                   _updateSpeakerState();
                                 });
                               },
@@ -323,8 +320,8 @@ class _CallScreenState extends State<CallScreen> {
                       backgroundColor: isHolding
                           ? Theme.of(context).primaryColor
                           : Colors.white24,
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24),
                           side: const BorderSide(color: Colors.white)),
@@ -332,7 +329,6 @@ class _CallScreenState extends State<CallScreen> {
                     onPressed: () {
                       log("Holding call? $isHolding");
                       TwilioVoice.instance.call.holdCall().then((value) {
-                        log(value.toString());
                         _updateHoldState();
                       });
                     },
