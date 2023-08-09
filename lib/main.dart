@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+// import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:twilio_voice_mimp/twilio_voice.dart';
 import 'call_screen.dart';
@@ -31,7 +31,8 @@ class DialScreen extends StatefulWidget {
 }
 
 class _DialScreenState extends State<DialScreen> with WidgetsBindingObserver {
-  late TextEditingController _controller;
+  final TextEditingController _controller =
+      TextEditingController(text: "live_ihs_9136");
   late String userId;
 
   registerUser() {
@@ -114,7 +115,6 @@ class _DialScreenState extends State<DialScreen> with WidgetsBindingObserver {
 
     const partnerId = "alicesId";
     TwilioVoice.instance.registerClient(partnerId, "Alice");
-    _controller = TextEditingController();
   }
 
   checkActiveCall() async {
@@ -122,7 +122,7 @@ class _DialScreenState extends State<DialScreen> with WidgetsBindingObserver {
     log("checkActiveCall $isOnCall");
     if (isOnCall &&
         !hasPushedToCall &&
-        TwilioVoice.instance.call.activeCall!.callDirection ==
+        TwilioVoice.instance.call.activeCall?.callDirection ==
             CallDirection.incoming) {
       log("user is on call");
       pushToCallScreen();
@@ -135,8 +135,7 @@ class _DialScreenState extends State<DialScreen> with WidgetsBindingObserver {
   void waitForCall() {
     checkActiveCall();
     TwilioVoice.instance.callEventsListener.listen((event) {
-      log("voip-onCallStateChanged $event");
-
+      log("voip-onCallStateChanged=> ${event}");
       switch (event) {
         case CallEvent.answer:
           //at this point android is still paused
@@ -175,6 +174,8 @@ class _DialScreenState extends State<DialScreen> with WidgetsBindingObserver {
           hasPushedToCall = true;
           break;
         default:
+          log(event.name.toString());
+
           break;
       }
     });
