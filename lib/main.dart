@@ -6,7 +6,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  );  return runApp(MyApp());
+  );
+  return runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -15,4 +16,3 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(home: Text("ok"));
   }
 }
-
