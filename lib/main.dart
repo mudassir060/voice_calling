@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,12 +8,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:twilio_voice_mimp/twilio_voice.dart';
 import 'call_screen.dart';
 import 'firebase_options.dart';
+import 'ui/common/app_strings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  );  return runApp(MyApp());
+  );
+  return runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -32,68 +35,68 @@ class _DialScreenState extends State<DialScreen> with WidgetsBindingObserver {
   late String userId;
 
   registerUser() {
-    print("voip- service init");
+    log("voip- service init");
     // if (TwilioVoice.instance.deviceToken != null) {
-    //   print("device token changed");
+    //   log("device token changed");
     // }
 
     register();
 
     TwilioVoice.instance.setOnDeviceTokenChanged((token) {
-      print("voip-device token changed");
+      log("voip-device token changed");
       register();
     });
   }
 
   register() async {
-    print("voip-registtering with token ");
-    print("voip-calling voice-accessToken");
-    final function =
-        FirebaseFunctions.instance.httpsCallable("voice-accessToken");
+    log("voip-registtering with token ");
+    log("voip-calling voice-accessToken");
+    // final function =
+    //     FirebaseFunctions.instance.httpsCallable("voice-accessToken");
 
-    final data = {
-      "platform": Platform.isIOS ? "iOS" : "Android",
-    };
+    // final data = {
+    //   "platform": Platform.isIOS ? "iOS" : "Android",
+    // };
 
-    final result = await function.call(data);
-    print("voip-result");
-    print(result.data);
+    // final result = await function.call(data);
+    log("voip-result");
+    // log(result.data);
     String? androidToken;
     if (Platform.isAndroid) {
       androidToken = await FirebaseMessaging.instance.getToken();
-      print("androidToken is " + androidToken!);
+      log("androidToken is ${androidToken!}");
     }
     TwilioVoice.instance
-        .setTokens(accessToken: result.data, deviceToken: androidToken);
+        .setTokens(accessToken: accessToken, deviceToken: androidToken);
   }
 
   var registered = false;
   waitForLogin() {
     final auth = FirebaseAuth.instance;
     auth.authStateChanges().listen((user) async {
-      print("authStateChanges $user");
+      log("authStateChanges $user");
       if (user == null) {
-        print("user is anonomous");
+        log("user is anonomous");
         await auth.signInAnonymously();
       } else if (!registered) {
         registered = true;
         this.userId = user.uid;
-        print("registering user ${user.uid}");
+        log("registering user ${user.uid}");
         registerUser();
 
         FirebaseMessaging.instance.requestPermission();
         // FirebaseMessaging.instance.configure(
         //     onMessage: (Map<String, dynamic> message) {
-        //   print("onMessage");
-        //   print(message);
+        //   log("onMessage");
+        //   log(message);
         //   return;
         // }, onLaunch: (Map<String, dynamic> message) {
-        //   print("onLaunch");
-        //   print(message);
+        //   log("onLaunch");
+        //   log(message);
         //   return;
         // }, onResume: (Map<String, dynamic> message) {
-        //   print("onResume");
-        //   print(message);
+        //   log("onResume");
+        //   log(message);
         //   return;
         // });
       }
@@ -116,12 +119,12 @@ class _DialScreenState extends State<DialScreen> with WidgetsBindingObserver {
 
   checkActiveCall() async {
     final isOnCall = await TwilioVoice.instance.call.isOnCall();
-    print("checkActiveCall $isOnCall");
+    log("checkActiveCall $isOnCall");
     if (isOnCall &&
         !hasPushedToCall &&
         TwilioVoice.instance.call.activeCall!.callDirection ==
             CallDirection.incoming) {
-      print("user is on call");
+      log("user is on call");
       pushToCallScreen();
       hasPushedToCall = true;
     }
@@ -131,58 +134,57 @@ class _DialScreenState extends State<DialScreen> with WidgetsBindingObserver {
 
   void waitForCall() {
     checkActiveCall();
-    TwilioVoice.instance.callEventsListener
-      .listen((event) {
-        print("voip-onCallStateChanged $event");
+    TwilioVoice.instance.callEventsListener.listen((event) {
+      log("voip-onCallStateChanged $event");
 
-        switch (event) {
-          case CallEvent.answer:
-            //at this point android is still paused
-            if (Platform.isIOS && state == null ||
-                state == AppLifecycleState.resumed) {
+      switch (event) {
+        case CallEvent.answer:
+          //at this point android is still paused
+          if (Platform.isIOS && state == null ||
+              state == AppLifecycleState.resumed) {
+            pushToCallScreen();
+            hasPushedToCall = true;
+          }
+          break;
+        case CallEvent.ringing:
+          final activeCall = TwilioVoice.instance.call.activeCall;
+          if (activeCall != null) {
+            final customData = activeCall.customParams;
+            if (customData != null) {
+              log("voip-customData $customData");
+            }
+          }
+          break;
+        case CallEvent.connected:
+          if (Platform.isAndroid &&
+              TwilioVoice.instance.call.activeCall!.callDirection ==
+                  CallDirection.incoming) {
+            if (state != AppLifecycleState.resumed) {
+              TwilioVoice.instance.showBackgroundCallUI();
+            } else if (state == null || state == AppLifecycleState.resumed) {
               pushToCallScreen();
               hasPushedToCall = true;
             }
-            break;
-          case CallEvent.ringing:
-            final activeCall = TwilioVoice.instance.call.activeCall;
-            if (activeCall != null) {
-              final customData = activeCall.customParams;
-              if (customData != null) {
-                print("voip-customData $customData");
-              }
-            }
-            break;
-          case CallEvent.connected:
-            if (Platform.isAndroid &&
-                TwilioVoice.instance.call.activeCall!.callDirection ==
-                    CallDirection.incoming) {
-              if (state != AppLifecycleState.resumed) {
-                TwilioVoice.instance.showBackgroundCallUI();
-              } else if (state == null || state == AppLifecycleState.resumed) {
-                pushToCallScreen();
-                hasPushedToCall = true;
-              }
-            }
-            break;
-          case CallEvent.callEnded:
-            hasPushedToCall = false;
-            break;
-          case CallEvent.returningCall:
-            pushToCallScreen();
-            hasPushedToCall = true;
-            break;
-          default:
-            break;
-        }
-      });
+          }
+          break;
+        case CallEvent.callEnded:
+          hasPushedToCall = false;
+          break;
+        case CallEvent.returningCall:
+          pushToCallScreen();
+          hasPushedToCall = true;
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   AppLifecycleState? state;
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     this.state = state;
-    print("didChangeAppLifecycleState");
+    log("didChangeAppLifecycleState");
     if (state == AppLifecycleState.resumed) {
       checkActiveCall();
     }
@@ -219,11 +221,11 @@ class _DialScreenState extends State<DialScreen> with WidgetsBindingObserver {
                   child: const Text("Make Call"),
                   onPressed: () async {
                     if (!await (TwilioVoice.instance.hasMicAccess())) {
-                      print("request mic access");
+                      log("request mic access");
                       TwilioVoice.instance.requestMicAccess();
                       return;
                     }
-                    print("starting call to ${_controller.text}");
+                    log("starting call to ${_controller.text}");
                     TwilioVoice.instance.call
                         .place(to: _controller.text, from: userId);
                     pushToCallScreen();
