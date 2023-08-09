@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:twilio_voice/twilio_voice.dart';
+import 'package:twilio_voice_mimp/twilio_voice.dart';
+
+
 
 class CallScreen extends StatefulWidget {
   @override
@@ -23,7 +24,6 @@ class _CallScreenState extends State<CallScreen> {
   void listenCall() {
     callStateListener = TwilioVoice.instance.callEventsListener.listen((event) {
       print("voip-onCallStateChanged $event");
-
       switch (event) {
         case CallEvent.callEnded:
           print("call Ended");
@@ -68,7 +68,7 @@ class _CallScreenState extends State<CallScreen> {
             message = "Ringing...";
           });
           break;
-      case CallEvent.declined:
+        case CallEvent.declined:
           setState(() {
             message = "Declined";
           });
@@ -80,7 +80,8 @@ class _CallScreenState extends State<CallScreen> {
         case CallEvent.answer:
           print("call answered");
           final activeCall = TwilioVoice.instance.call.activeCall;
-          if(activeCall != null && activeCall.callDirection == CallDirection.incoming) {
+          if (activeCall != null &&
+              activeCall.callDirection == CallDirection.incoming) {
             setState(() {
               message = "Answered";
             });
@@ -128,9 +129,9 @@ class _CallScreenState extends State<CallScreen> {
 
   Future<void> _updateMuteState() async {
     // final isMuted = await TwilioVoice.instance.call.isMuted();
-    // setState(() {
-    //   mute = isMuted ?? false;
-    // });
+    setState(() {
+      mute = !mute;
+    });
   }
 
   Future<void> _updateSpeakerState() async {
@@ -227,7 +228,8 @@ class _CallScreenState extends State<CallScreen> {
                                 //   speaker = !speaker;
                                 // });
                                 TwilioVoice.instance.call
-                                    .toggleSpeaker(!speaker).then((value) {
+                                    .toggleSpeaker(!speaker)
+                                    .then((value) {
                                   _updateSpeakerState();
                                 });
                               },
@@ -260,7 +262,7 @@ class _CallScreenState extends State<CallScreen> {
                               ),
                               onTap: () {
                                 // BLuetooth functionality is not supported on web or macos
-                                if(kIsWeb || Platform.isMacOS) {
+                                if (kIsWeb || Platform.isMacOS) {
                                   return;
                                 }
                                 final newState = !isBluetoothOn;
@@ -301,7 +303,9 @@ class _CallScreenState extends State<CallScreen> {
                               ),
                               onTap: () {
                                 print("mute!");
-                                TwilioVoice.instance.call.toggleMute(!mute).then((value) {
+                                TwilioVoice.instance.call
+                                    .toggleMute(!mute)
+                                    .then((value) {
                                   _updateMuteState();
                                 });
                                 // setState(() {
@@ -314,9 +318,14 @@ class _CallScreenState extends State<CallScreen> {
                       ]),
                   TextButton(
                     style: TextButton.styleFrom(
-                      backgroundColor: isHolding ? Theme.of(context).primaryColor : Colors.white24,
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: Colors.white)),
+                      backgroundColor: isHolding
+                          ? Theme.of(context).primaryColor
+                          : Colors.white24,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          side: BorderSide(color: Colors.white)),
                     ),
                     onPressed: () {
                       print("Holding call? $isHolding");
