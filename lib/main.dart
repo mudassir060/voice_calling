@@ -1,9 +1,10 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-// import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:twilio_voice_mimp/twilio_voice.dart';
 import 'call_screen.dart';
@@ -15,24 +16,28 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  return runApp(MyApp());
+  return runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: DialScreen());
+    return const MaterialApp(home: DialScreen());
   }
 }
 
 class DialScreen extends StatefulWidget {
+  const DialScreen({super.key});
+
   @override
   _DialScreenState createState() => _DialScreenState();
 }
 
 class _DialScreenState extends State<DialScreen> with WidgetsBindingObserver {
   final TextEditingController _controller =
-      TextEditingController(text: "live_ihs_9136");
+      TextEditingController(text: "+18057495144");
   late String userId;
 
   registerUser() {
@@ -135,7 +140,7 @@ class _DialScreenState extends State<DialScreen> with WidgetsBindingObserver {
   void waitForCall() {
     checkActiveCall();
     TwilioVoice.instance.callEventsListener.listen((event) {
-      log("voip-onCallStateChanged=> ${event}");
+      log("voip-onCallStateChanged=> $event");
       switch (event) {
         case CallEvent.answer:
           //at this point android is still paused
